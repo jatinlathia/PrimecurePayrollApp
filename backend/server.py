@@ -533,16 +533,11 @@ async def download_payslip(payslip_id: str, username: str = Depends(verify_token
     elements.append(table1)
     elements.append(Spacer(1, 15))
     
-    # Add "EMPLOYEE PAY SUMMARY" header above earnings/deductions table
-    summary_header_style = ParagraphStyle('SummaryHeader', parent=styles['Normal'], fontSize=11, fontName='Helvetica-Bold', alignment=TA_CENTER, spaceAfter=10, spaceBefore=5)
-    summary_header = Paragraph('EMPLOYEE PAY SUMMARY', summary_header_style)
-    elements.append(summary_header)
-    elements.append(Spacer(1, 5))
-    
     # TABLE 2: Earnings and Deductions
     salary_style = ParagraphStyle('Salary', parent=styles['Normal'], fontSize=9)
     salary_header_style = ParagraphStyle('SalaryHeader', parent=styles['Normal'], fontSize=10, textColor=colors.white, fontName='Helvetica-Bold')
     amount_header_style = ParagraphStyle('AmountHeader', parent=styles['Normal'], fontSize=9, textColor=colors.white, alignment=TA_RIGHT)
+    summary_title_style = ParagraphStyle('SummaryTitle', parent=styles['Normal'], fontSize=11, fontName='Helvetica-Bold', alignment=TA_CENTER, textColor=colors.white)
     
     # Build earnings and deductions rows (without rupee symbol in front)
     earnings_list = [[Paragraph(k, salary_style), Paragraph(f"{v:,.2f}", ParagraphStyle('Amount', parent=salary_style, alignment=TA_RIGHT))] for k, v in payslip['earnings'].items()]
@@ -555,8 +550,9 @@ async def download_payslip(payslip_id: str, username: str = Depends(verify_token
     while len(deductions_list) < max_rows:
         deductions_list.append(['', ''])
     
-    # Create salary table with headers
+    # Create salary table with EMPLOYEE PAY SUMMARY header row and column headers
     salary_data = [
+        [Paragraph('EMPLOYEE PAY SUMMARY', summary_title_style), '', '', ''],
         [Paragraph('EARNINGS', salary_header_style), Paragraph('Amount', amount_header_style), 
          Paragraph('DEDUCTIONS', salary_header_style), Paragraph('Amount', amount_header_style)]
     ]
@@ -575,23 +571,31 @@ async def download_payslip(payslip_id: str, username: str = Depends(verify_token
     
     salary_table = Table(salary_data, colWidths=[2.5*inch, 1.25*inch, 2.5*inch, 1.25*inch])
     salary_table.setStyle(TableStyle([
-        # Header row styling
-        ('BACKGROUND', (0, 0), (1, 0), colors.HexColor('#34495e')),
-        ('BACKGROUND', (2, 0), (3, 0), colors.HexColor('#34495e')),
-        ('ALIGN', (1, 0), (1, 0), 'RIGHT'),
-        ('ALIGN', (3, 0), (3, 0), 'RIGHT'),
+        # Title row styling (EMPLOYEE PAY SUMMARY)
+        ('SPAN', (0, 0), (3, 0)),
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#2c3e50')),
+        ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
+        ('VALIGN', (0, 0), (-1, 0), 'MIDDLE'),
+        ('TOPPADDING', (0, 0), (-1, 0), 10),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 10),
+        
+        # Header row styling (EARNINGS/DEDUCTIONS)
+        ('BACKGROUND', (0, 1), (1, 1), colors.HexColor('#34495e')),
+        ('BACKGROUND', (2, 1), (3, 1), colors.HexColor('#34495e')),
+        ('ALIGN', (1, 1), (1, 1), 'RIGHT'),
+        ('ALIGN', (3, 1), (3, 1), 'RIGHT'),
         
         # All cells
         ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
         ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-        ('TOPPADDING', (0, 0), (-1, -1), 8),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+        ('TOPPADDING', (0, 1), (-1, -1), 8),
+        ('BOTTOMPADDING', (0, 1), (-1, -1), 8),
         ('LEFTPADDING', (0, 0), (-1, -1), 8),
         ('RIGHTPADDING', (0, 0), (-1, -1), 8),
         
         # Amount columns alignment
-        ('ALIGN', (1, 1), (1, -1), 'RIGHT'),
-        ('ALIGN', (3, 1), (3, -1), 'RIGHT'),
+        ('ALIGN', (1, 2), (1, -1), 'RIGHT'),
+        ('ALIGN', (3, 2), (3, -1), 'RIGHT'),
         
         # Total row styling
         ('BACKGROUND', (0, -1), (-1, -1), colors.HexColor('#ecf0f1')),
