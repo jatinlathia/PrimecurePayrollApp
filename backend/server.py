@@ -17,7 +17,7 @@ from io import BytesIO
 from reportlab.lib.pagesizes import letter, A4
 from reportlab.lib import colors
 from reportlab.lib.units import inch
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
 
@@ -451,7 +451,7 @@ async def download_payslip(payslip_id: str, username: str = Depends(verify_token
     month_names = ['', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
     
     # TABLE 1: Company Header + Employee Summary
-    # Row 1: Company Name and Address (with space for logo)
+    # Row 1: Company Name and Address with Logo
     company_style = ParagraphStyle('Company', parent=styles['Normal'], fontSize=12, fontName='Helvetica-Bold', alignment=TA_LEFT)
     address_style = ParagraphStyle('Address', parent=styles['Normal'], fontSize=8, alignment=TA_LEFT, textColor=colors.grey)
     
@@ -461,7 +461,10 @@ async def download_payslip(payslip_id: str, username: str = Depends(verify_token
         company_style
     )
     
-    logo_placeholder = Paragraph('<font size=8 color="grey">[Logo Space]</font>', ParagraphStyle('Logo', alignment=TA_RIGHT, fontSize=8))
+    # Load and resize logo
+    logo_path = Path(__file__).parent / 'logo.png'
+    logo = Image(str(logo_path), width=1.2*inch, height=1.2*inch)
+    logo.hAlign = 'RIGHT'
     
     # Row 2: Employee Summary Header
     summary_header_style = ParagraphStyle('SummaryHeader', parent=styles['Normal'], fontSize=11, fontName='Helvetica-Bold', alignment=TA_CENTER, spaceAfter=5, spaceBefore=5)
@@ -489,17 +492,18 @@ async def download_payslip(payslip_id: str, username: str = Depends(verify_token
     
     # Build Table 1
     table1_data = [
-        [company_info, logo_placeholder],
+        [company_info, logo],
         [summary_header, ''],
         [left_details, right_details]
     ]
     
     table1 = Table(table1_data, colWidths=[4.5*inch, 3*inch])
     table1.setStyle(TableStyle([
-        # Row 1: Company header
+        # Row 1: Company header with logo
         ('SPAN', (0, 0), (1, 0)),
         ('ALIGN', (0, 0), (0, 0), 'LEFT'),
-        ('VALIGN', (0, 0), (0, 0), 'TOP'),
+        ('ALIGN', (1, 0), (1, 0), 'RIGHT'),
+        ('VALIGN', (0, 0), (-1, 0), 'MIDDLE'),
         ('TOPPADDING', (0, 0), (-1, 0), 10),
         ('BOTTOMPADDING', (0, 0), (-1, 0), 10),
         ('LEFTPADDING', (0, 0), (-1, 0), 10),
