@@ -250,8 +250,7 @@ async def create_promotion(promotion_data: PromotionCreate, username: str = Depe
         promotion_data.new_salary_components.basic,
         promotion_data.new_salary_components.house_rent_allowance,
         promotion_data.new_salary_components.transport_allowance,
-        promotion_data.new_salary_components.fixed_allowance,
-        promotion_data.new_salary_components.home_collection_visit
+        promotion_data.new_salary_components.fixed_allowance
     ])
     
     promotion = Promotion(
