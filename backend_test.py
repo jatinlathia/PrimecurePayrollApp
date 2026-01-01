@@ -340,8 +340,8 @@ class PayrollAPITester:
             self.test_get_promotions()
             
             # Test payslip generation
-            payslip = self.test_generate_payslip(employee_id)
-            if payslip:
+            success, payslip = self.test_generate_payslip(employee_id)
+            if success and payslip:
                 payslip_id = payslip.get('id')
                 
                 # Test get payslips
