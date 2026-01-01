@@ -451,20 +451,29 @@ async def download_payslip(payslip_id: str, username: str = Depends(verify_token
     month_names = ['', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
     
     # TABLE 1: Company Header + Employee Summary
-    # Row 1: Company Name and Address with Logo
+    # Row 1: Company Name, Address and Logo in same cell
     company_style = ParagraphStyle('Company', parent=styles['Normal'], fontSize=12, fontName='Helvetica-Bold', alignment=TA_LEFT)
-    address_style = ParagraphStyle('Address', parent=styles['Normal'], fontSize=8, alignment=TA_LEFT, textColor=colors.grey)
-    
-    company_info = Paragraph(
-        'PRIMECURE PATHLABS PRIVATE LIMITED<br/>'
-        '<font size=8 color="grey">131, Rhydham Plaza, Amar Jawan Circle, Nikol, Ahmedabad, Gujarat Ahmedabad Gujarat 382350 India</font>',
-        company_style
-    )
     
     # Load and resize logo
     logo_path = Path(__file__).parent / 'logo.png'
-    logo = Image(str(logo_path), width=1.2*inch, height=1.2*inch)
-    logo.hAlign = 'RIGHT'
+    logo = Image(str(logo_path), width=1*inch, height=1*inch)
+    
+    # Create a table within the cell to position text left and logo right
+    company_info_text = Paragraph(
+        'PRIMECURE PATHLABS PRIVATE LIMITED<br/>'
+        '<font size=8 color="grey">131, Rhydham Plaza, Amar Jawan Circle, Nikol,<br/>'
+        'Ahmedabad, Gujarat Ahmedabad Gujarat 382350 India</font>',
+        company_style
+    )
+    
+    # Inner table for company header with text on left and logo on right
+    company_header_data = [[company_info_text, logo]]
+    company_header_table = Table(company_header_data, colWidths=[5.5*inch, 2*inch])
+    company_header_table.setStyle(TableStyle([
+        ('ALIGN', (0, 0), (0, 0), 'LEFT'),
+        ('ALIGN', (1, 0), (1, 0), 'RIGHT'),
+        ('VALIGN', (0, 0), (-1, 0), 'MIDDLE'),
+    ]))
     
     # Row 2: Employee Summary Header
     summary_header_style = ParagraphStyle('SummaryHeader', parent=styles['Normal'], fontSize=11, fontName='Helvetica-Bold', alignment=TA_CENTER, spaceAfter=5, spaceBefore=5)
@@ -492,16 +501,16 @@ async def download_payslip(payslip_id: str, username: str = Depends(verify_token
     
     # Build Table 1
     table1_data = [
-        [company_info, logo],
+        [company_header_table],
         [summary_header, ''],
         [left_details, right_details]
     ]
     
     table1 = Table(table1_data, colWidths=[4.5*inch, 3*inch])
     table1.setStyle(TableStyle([
-        # Row 1: Company header with logo (no span)
+        # Row 1: Company header with logo in same cell
+        ('SPAN', (0, 0), (1, 0)),
         ('ALIGN', (0, 0), (0, 0), 'LEFT'),
-        ('ALIGN', (1, 0), (1, 0), 'RIGHT'),
         ('VALIGN', (0, 0), (-1, 0), 'MIDDLE'),
         ('TOPPADDING', (0, 0), (-1, 0), 10),
         ('BOTTOMPADDING', (0, 0), (-1, 0), 10),
