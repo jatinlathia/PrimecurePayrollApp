@@ -462,7 +462,7 @@ async def download_payslip(payslip_id: str, username: str = Depends(verify_token
     company_info_text = Paragraph(
         'PRIMECURE PATHLABS PRIVATE LIMITED<br/>'
         '<font size=8 color="grey">131, Rhydham Plaza, Amar Jawan Circle, Nikol,<br/>'
-        'Ahmedabad, Gujarat Ahmedabad Gujarat 382350 India</font>',
+        'Ahmedabad, Gujarat 382350 India</font>',
         company_style
     )
     
