@@ -535,8 +535,8 @@ async def download_payslip(payslip_id: str, username: str = Depends(verify_token
     
     # TABLE 2: Earnings and Deductions
     salary_style = ParagraphStyle('Salary', parent=styles['Normal'], fontSize=9)
-    salary_header_style = ParagraphStyle('SalaryHeader', parent=styles['Normal'], fontSize=10, textColor=colors.white, fontName='Helvetica-Bold', alignment=TA_CENTER)
-    amount_header_style = ParagraphStyle('AmountHeader', parent=styles['Normal'], fontSize=9, textColor=colors.white, alignment=TA_CENTER, fontName='Helvetica-Bold')
+    salary_header_style = ParagraphStyle('SalaryHeader', parent=styles['Normal'], fontSize=10, textColor=colors.black, fontName='Helvetica-Bold', alignment=TA_CENTER)
+    amount_header_style = ParagraphStyle('AmountHeader', parent=styles['Normal'], fontSize=9, textColor=colors.black, alignment=TA_CENTER, fontName='Helvetica-Bold')
     summary_title_style = ParagraphStyle('SummaryTitle', parent=styles['Normal'], fontSize=11, fontName='Helvetica-Bold', alignment=TA_CENTER, textColor=colors.black)
     
     # Build earnings and deductions rows (without rupee symbol in front)
@@ -580,8 +580,8 @@ async def download_payslip(payslip_id: str, username: str = Depends(verify_token
         ('BOTTOMPADDING', (0, 0), (-1, 0), 10),
         
         # Header row styling (EARNINGS/DEDUCTIONS)
-        ('BACKGROUND', (0, 1), (1, 1), colors.HexColor('#34495e')),
-        ('BACKGROUND', (2, 1), (3, 1), colors.HexColor('#34495e')),
+        ('BACKGROUND', (0, 1), (1, 1), colors.HexColor('#d3d3d3')),
+        ('BACKGROUND', (2, 1), (3, 1), colors.HexColor('#d3d3d3')),
         ('ALIGN', (1, 1), (1, 1), 'CENTER'),
         ('ALIGN', (3, 1), (3, 1), 'CENTER'),
         
