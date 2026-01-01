@@ -21,6 +21,59 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, 
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
 
+# Number to words converter for Indian currency
+def number_to_words_indian(num):
+    """Convert number to words in Indian English format"""
+    if num == 0:
+        return "Zero"
+    
+    def convert_less_than_thousand(n):
+        ones = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"]
+        tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"]
+        teens = ["Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"]
+        
+        if n < 10:
+            return ones[n]
+        elif n < 20:
+            return teens[n - 10]
+        elif n < 100:
+            return tens[n // 10] + (" " + ones[n % 10] if n % 10 != 0 else "")
+        else:
+            return ones[n // 100] + " Hundred" + (" " + convert_less_than_thousand(n % 100) if n % 100 != 0 else "")
+    
+    # Split into integer and decimal parts
+    rupees = int(num)
+    paise = round((num - rupees) * 100)
+    
+    result = []
+    
+    if rupees == 0:
+        result.append("Zero Rupees")
+    else:
+        # Indian numbering system: crores, lakhs, thousands, hundreds
+        crores = rupees // 10000000
+        lakhs = (rupees % 10000000) // 100000
+        thousands = (rupees % 100000) // 1000
+        hundreds = rupees % 1000
+        
+        if crores > 0:
+            result.append(convert_less_than_thousand(crores) + " Crore")
+        if lakhs > 0:
+            result.append(convert_less_than_thousand(lakhs) + " Lakh")
+        if thousands > 0:
+            result.append(convert_less_than_thousand(thousands) + " Thousand")
+        if hundreds > 0:
+            result.append(convert_less_than_thousand(hundreds))
+        
+        result.append("Rupees")
+    
+    if paise > 0:
+        result.append("and " + convert_less_than_thousand(paise) + " Paise")
+    
+    result.append("Only")
+    
+    return " ".join(result)
+
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
@@ -539,6 +592,8 @@ async def download_payslip(payslip_id: str, username: str = Depends(verify_token
     elements.append(Spacer(1, 15))
     
     # Net Payable
+    net_amount_words = number_to_words_indian(payslip['net_payable'])
+    
     net_data = [[
         Paragraph('<b>Total Net Payable</b>', salary_style),
         Paragraph(f"<b>{payslip['net_payable']:,.2f}</b>", ParagraphStyle('NetAmount', parent=salary_style, alignment=TA_RIGHT, fontName='Helvetica-Bold'))
@@ -556,6 +611,12 @@ async def download_payslip(payslip_id: str, username: str = Depends(verify_token
         ('ALIGN', (1, 0), (1, 0), 'RIGHT'),
     ]))
     elements.append(net_table)
+    
+    # Amount in words
+    words_style = ParagraphStyle('Words', parent=styles['Normal'], fontSize=9, alignment=TA_LEFT, textColor=colors.grey, fontName='Helvetica-Oblique')
+    amount_words = Paragraph(f"<i>({net_amount_words})</i>", words_style)
+    elements.append(Spacer(1, 3))
+    elements.append(amount_words)
     elements.append(Spacer(1, 30))
     
     # Footer
