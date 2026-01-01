@@ -117,6 +117,8 @@ class PayslipGenerate(BaseModel):
     paid_days: int
     lop_days: int
     home_collection_visit: Optional[float] = 0
+    custom_deduction_name: Optional[str] = None
+    custom_deduction_amount: Optional[float] = 0
 
 class Payslip(BaseModel):
     model_config = ConfigDict(extra="ignore")
@@ -327,6 +329,10 @@ async def generate_payslip(payslip_data: PayslipGenerate, username: str = Depend
     deductions = {}
     if components.get('professional_tax', 0) > 0:
         deductions['Professional Tax'] = components['professional_tax']
+    
+    # Add custom deduction if provided (monthly variable component)
+    if payslip_data.custom_deduction_name and payslip_data.custom_deduction_amount and payslip_data.custom_deduction_amount > 0:
+        deductions[payslip_data.custom_deduction_name] = payslip_data.custom_deduction_amount
     
     total_deductions = sum(deductions.values())
     net_payable = gross_earnings - total_deductions
@@ -539,14 +545,14 @@ async def download_payslip(payslip_id: str, username: str = Depends(verify_token
     ]]
     net_table = Table(net_data, colWidths=[5.5*inch, 2*inch])
     net_table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#27ae60')),
+        ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#d3d3d3')),
         ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
         ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
         ('TOPPADDING', (0, 0), (-1, -1), 10),
         ('BOTTOMPADDING', (0, 0), (-1, -1), 10),
         ('LEFTPADDING', (0, 0), (-1, -1), 8),
         ('RIGHTPADDING', (0, 0), (-1, -1), 8),
-        ('TEXTCOLOR', (0, 0), (-1, -1), colors.white),
+        ('TEXTCOLOR', (0, 0), (-1, -1), colors.black),
         ('ALIGN', (1, 0), (1, 0), 'RIGHT'),
     ]))
     elements.append(net_table)
