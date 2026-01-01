@@ -594,9 +594,16 @@ async def download_payslip(payslip_id: str, username: str = Depends(verify_token
     # Net Payable
     net_amount_words = number_to_words_indian(payslip['net_payable'])
     
+    # Combine numeric amount and words in the same cell
+    net_amount_with_words = Paragraph(
+        f"<b>{payslip['net_payable']:,.2f}</b><br/>"
+        f"<font size=8 color='grey'><i>({net_amount_words})</i></font>",
+        ParagraphStyle('NetAmount', parent=salary_style, alignment=TA_RIGHT, fontName='Helvetica-Bold')
+    )
+    
     net_data = [[
         Paragraph('<b>Total Net Payable</b>', salary_style),
-        Paragraph(f"<b>{payslip['net_payable']:,.2f}</b>", ParagraphStyle('NetAmount', parent=salary_style, alignment=TA_RIGHT, fontName='Helvetica-Bold'))
+        net_amount_with_words
     ]]
     net_table = Table(net_data, colWidths=[5.5*inch, 2*inch])
     net_table.setStyle(TableStyle([
@@ -611,12 +618,6 @@ async def download_payslip(payslip_id: str, username: str = Depends(verify_token
         ('ALIGN', (1, 0), (1, 0), 'RIGHT'),
     ]))
     elements.append(net_table)
-    
-    # Amount in words
-    words_style = ParagraphStyle('Words', parent=styles['Normal'], fontSize=9, alignment=TA_LEFT, textColor=colors.grey, fontName='Helvetica-Oblique')
-    amount_words = Paragraph(f"<i>({net_amount_words})</i>", words_style)
-    elements.append(Spacer(1, 3))
-    elements.append(amount_words)
     elements.append(Spacer(1, 30))
     
     # Footer
