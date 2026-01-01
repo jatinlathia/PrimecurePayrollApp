@@ -456,7 +456,7 @@ async def download_payslip(payslip_id: str, username: str = Depends(verify_token
     
     # Load and resize logo
     logo_path = Path(__file__).parent / 'logo.png'
-    logo = Image(str(logo_path), width=0.5*inch, height=0.5*inch)
+    logo = Image(str(logo_path), width=0.75*inch, height=0.5*inch)
     
     # Create a table within the cell to position text left and logo right
     company_info_text = Paragraph(
