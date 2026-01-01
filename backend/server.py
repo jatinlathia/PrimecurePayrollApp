@@ -533,6 +533,12 @@ async def download_payslip(payslip_id: str, username: str = Depends(verify_token
     elements.append(table1)
     elements.append(Spacer(1, 15))
     
+    # Add "EMPLOYEE PAY SUMMARY" header above earnings/deductions table
+    summary_header_style = ParagraphStyle('SummaryHeader', parent=styles['Normal'], fontSize=11, fontName='Helvetica-Bold', alignment=TA_CENTER, spaceAfter=10, spaceBefore=5)
+    summary_header = Paragraph('EMPLOYEE PAY SUMMARY', summary_header_style)
+    elements.append(summary_header)
+    elements.append(Spacer(1, 5))
+    
     # TABLE 2: Earnings and Deductions
     salary_style = ParagraphStyle('Salary', parent=styles['Normal'], fontSize=9)
     salary_header_style = ParagraphStyle('SalaryHeader', parent=styles['Normal'], fontSize=10, textColor=colors.white, fontName='Helvetica-Bold')
