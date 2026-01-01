@@ -499,8 +499,7 @@ async def download_payslip(payslip_id: str, username: str = Depends(verify_token
     
     table1 = Table(table1_data, colWidths=[4.5*inch, 3*inch])
     table1.setStyle(TableStyle([
-        # Row 1: Company header with logo
-        ('SPAN', (0, 0), (1, 0)),
+        # Row 1: Company header with logo (no span)
         ('ALIGN', (0, 0), (0, 0), 'LEFT'),
         ('ALIGN', (1, 0), (1, 0), 'RIGHT'),
         ('VALIGN', (0, 0), (-1, 0), 'MIDDLE'),
