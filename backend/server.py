@@ -389,58 +389,97 @@ async def download_payslip(payslip_id: str, username: str = Depends(verify_token
     elements = []
     styles = getSampleStyleSheet()
     
-    # Title
     month_names = ['', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-    title_style = ParagraphStyle('Title', parent=styles['Heading1'], fontSize=14, alignment=TA_CENTER, spaceAfter=20)
-    title = Paragraph(f"Payslip for the month of {month_names[payslip['month']]} {payslip['year']}", title_style)
-    elements.append(title)
     
-    # Employee Pay Summary Header
-    header_style = ParagraphStyle('Header', parent=styles['Normal'], fontSize=12, alignment=TA_CENTER, textColor=colors.white, spaceAfter=10)
-    header_data = [[Paragraph('EMPLOYEE PAY SUMMARY', header_style)]]
-    header_table = Table(header_data, colWidths=[7.5*inch])
-    header_table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#2c3e50')),
-        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-        ('TOPPADDING', (0, 0), (-1, -1), 10),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 10),
-    ]))
-    elements.append(header_table)
-    elements.append(Spacer(1, 10))
+    # TABLE 1: Company Header + Employee Summary
+    # Row 1: Company Name and Address (with space for logo)
+    company_style = ParagraphStyle('Company', parent=styles['Normal'], fontSize=12, fontName='Helvetica-Bold', alignment=TA_LEFT)
+    address_style = ParagraphStyle('Address', parent=styles['Normal'], fontSize=8, alignment=TA_LEFT, textColor=colors.grey)
     
-    # Employee Details
-    detail_style = ParagraphStyle('Detail', parent=styles['Normal'], fontSize=9)
-    detail_data = [
-        [Paragraph('<b>Employee Name:</b>', detail_style), Paragraph(employee['name'], detail_style),
-         Paragraph('<b>Employee No:</b>', detail_style), Paragraph(employee['employee_no'], detail_style)],
-        [Paragraph('<b>Designation:</b>', detail_style), Paragraph(employee['designation'], detail_style),
-         Paragraph('<b>Department:</b>', detail_style), Paragraph(employee['department'], detail_style)],
-        [Paragraph('<b>Date of Joining:</b>', detail_style), Paragraph(employee['date_of_joining'], detail_style),
-         Paragraph('<b>Bank Account No:</b>', detail_style), Paragraph(employee['bank_account_no'], detail_style)],
-        [Paragraph('<b>Paid Days:</b>', detail_style), Paragraph(str(payslip['paid_days']), detail_style),
-         Paragraph('<b>LOP Days:</b>', detail_style), Paragraph(str(payslip['lop_days']), detail_style)],
-        [Paragraph('<b>Work Location:</b>', detail_style), Paragraph(employee['work_location'], detail_style), '', ''],
+    company_info = Paragraph(
+        'PRIMECURE PATHLABS PRIVATE LIMITED<br/>'
+        '<font size=8 color="grey">131, Rhydham Plaza, Amar Jawan Circle, Nikol, Ahmedabad, Gujarat Ahmedabad Gujarat 382350 India</font>',
+        company_style
+    )
+    
+    logo_placeholder = Paragraph('<font size=8 color="grey">[Logo Space]</font>', ParagraphStyle('Logo', alignment=TA_RIGHT, fontSize=8))
+    
+    # Row 2: Employee Summary Header
+    summary_header_style = ParagraphStyle('SummaryHeader', parent=styles['Normal'], fontSize=11, fontName='Helvetica-Bold', alignment=TA_CENTER, spaceAfter=5, spaceBefore=5)
+    summary_header = Paragraph('EMPLOYEE PAY SUMMARY', summary_header_style)
+    
+    # Employee Details (left aligned and right aligned)
+    detail_style = ParagraphStyle('Detail', parent=styles['Normal'], fontSize=9, leading=14)
+    
+    left_details = Paragraph(
+        f"<b>Employee Name:</b> {employee['name']}<br/>"
+        f"<b>Designation:</b> {employee['designation']}<br/>"
+        f"<b>Date of Joining:</b> {employee['date_of_joining']}<br/>"
+        f"<b>Paid Days:</b> {payslip['paid_days']}<br/>"
+        f"<b>Work Location:</b> {employee['work_location']}",
+        detail_style
+    )
+    
+    right_details = Paragraph(
+        f"<b>Employee No:</b> {employee['employee_no']}<br/>"
+        f"<b>Department:</b> {employee['department']}<br/>"
+        f"<b>Bank Account No:</b> {employee['bank_account_no']}<br/>"
+        f"<b>LOP Days:</b> {payslip['lop_days']}",
+        detail_style
+    )
+    
+    # Build Table 1
+    table1_data = [
+        [company_info, logo_placeholder],
+        [summary_header, ''],
+        [left_details, right_details]
     ]
     
-    detail_table = Table(detail_data, colWidths=[1.5*inch, 2.25*inch, 1.5*inch, 2.25*inch])
-    detail_table.setStyle(TableStyle([
-        ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
-        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-        ('TOPPADDING', (0, 0), (-1, -1), 8),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
-        ('LEFTPADDING', (0, 0), (-1, -1), 5),
+    table1 = Table(table1_data, colWidths=[4.5*inch, 3*inch])
+    table1.setStyle(TableStyle([
+        # Row 1: Company header
+        ('SPAN', (0, 0), (1, 0)),
+        ('ALIGN', (0, 0), (0, 0), 'LEFT'),
+        ('VALIGN', (0, 0), (0, 0), 'TOP'),
+        ('TOPPADDING', (0, 0), (-1, 0), 10),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 10),
+        ('LEFTPADDING', (0, 0), (-1, 0), 10),
+        ('GRID', (0, 0), (-1, 0), 0.5, colors.grey),
+        
+        # Row 2: Employee Summary header
+        ('SPAN', (0, 1), (1, 1)),
+        ('ALIGN', (0, 1), (-1, 1), 'CENTER'),
+        ('VALIGN', (0, 1), (-1, 1), 'MIDDLE'),
+        ('BACKGROUND', (0, 1), (-1, 1), colors.HexColor('#e8e8e8')),
+        ('TOPPADDING', (0, 1), (-1, 1), 8),
+        ('BOTTOMPADDING', (0, 1), (-1, 1), 8),
+        ('GRID', (0, 1), (-1, 1), 0.5, colors.grey),
+        
+        # Row 3: Employee details
+        ('ALIGN', (0, 2), (0, 2), 'LEFT'),
+        ('ALIGN', (1, 2), (1, 2), 'LEFT'),
+        ('VALIGN', (0, 2), (-1, 2), 'TOP'),
+        ('TOPPADDING', (0, 2), (-1, 2), 10),
+        ('BOTTOMPADDING', (0, 2), (-1, 2), 10),
+        ('LEFTPADDING', (0, 2), (-1, 2), 10),
+        ('GRID', (0, 2), (-1, 2), 0.5, colors.grey),
     ]))
-    elements.append(detail_table)
+    
+    elements.append(Spacer(1, 10))
+    elements.append(Paragraph(f"<b>Payslip for the month of {month_names[payslip['month']]} {payslip['year']}</b>", 
+                              ParagraphStyle('MonthTitle', parent=styles['Normal'], fontSize=12, alignment=TA_CENTER, spaceAfter=10, fontName='Helvetica-Bold')))
+    elements.append(Spacer(1, 5))
+    elements.append(table1)
     elements.append(Spacer(1, 15))
     
-    # Earnings and Deductions Table
+    # TABLE 2: Earnings and Deductions
     salary_style = ParagraphStyle('Salary', parent=styles['Normal'], fontSize=9)
-    salary_header_style = ParagraphStyle('SalaryHeader', parent=styles['Normal'], fontSize=10, textColor=colors.white)
+    salary_header_style = ParagraphStyle('SalaryHeader', parent=styles['Normal'], fontSize=10, textColor=colors.white, fontName='Helvetica-Bold')
+    amount_header_style = ParagraphStyle('AmountHeader', parent=styles['Normal'], fontSize=9, textColor=colors.white, alignment=TA_RIGHT)
     
-    # Build earnings and deductions rows
-    earnings_list = [[Paragraph(k, salary_style), Paragraph(f"₹{v:,.2f}", salary_style)] for k, v in payslip['earnings'].items()]
-    deductions_list = [[Paragraph(k, salary_style), Paragraph(f"₹{v:,.2f}", salary_style)] for k, v in payslip['deductions'].items()]
+    # Build earnings and deductions rows (without rupee symbol in front)
+    earnings_list = [[Paragraph(k, salary_style), Paragraph(f"{v:,.2f}", ParagraphStyle('Amount', parent=salary_style, alignment=TA_RIGHT))] for k, v in payslip['earnings'].items()]
+    deductions_list = [[Paragraph(k, salary_style), Paragraph(f"{v:,.2f}", ParagraphStyle('Amount', parent=salary_style, alignment=TA_RIGHT))] for k, v in payslip['deductions'].items()]
     
     # Make both lists the same length
     max_rows = max(len(earnings_list), len(deductions_list))
@@ -449,8 +488,11 @@ async def download_payslip(payslip_id: str, username: str = Depends(verify_token
     while len(deductions_list) < max_rows:
         deductions_list.append(['', ''])
     
-    # Create salary table
-    salary_data = [[Paragraph('EARNINGS', salary_header_style), '', Paragraph('DEDUCTIONS', salary_header_style), '']]
+    # Create salary table with headers
+    salary_data = [
+        [Paragraph('EARNINGS', salary_header_style), Paragraph('Amount', amount_header_style), 
+         Paragraph('DEDUCTIONS', salary_header_style), Paragraph('Amount', amount_header_style)]
+    ]
     
     for i in range(max_rows):
         row = earnings_list[i] + deductions_list[i]
@@ -459,20 +501,32 @@ async def download_payslip(payslip_id: str, username: str = Depends(verify_token
     # Add totals
     salary_data.append([
         Paragraph('<b>Gross Earnings</b>', salary_style),
-        Paragraph(f"<b>₹{payslip['gross_earnings']:,.2f}</b>", salary_style),
+        Paragraph(f"<b>{payslip['gross_earnings']:,.2f}</b>", ParagraphStyle('TotalAmount', parent=salary_style, alignment=TA_RIGHT, fontName='Helvetica-Bold')),
         Paragraph('<b>Total Deductions</b>', salary_style),
-        Paragraph(f"<b>₹{payslip['total_deductions']:,.2f}</b>", salary_style)
+        Paragraph(f"<b>{payslip['total_deductions']:,.2f}</b>", ParagraphStyle('TotalAmount', parent=salary_style, alignment=TA_RIGHT, fontName='Helvetica-Bold'))
     ])
     
     salary_table = Table(salary_data, colWidths=[2.5*inch, 1.25*inch, 2.5*inch, 1.25*inch])
     salary_table.setStyle(TableStyle([
+        # Header row styling
         ('BACKGROUND', (0, 0), (1, 0), colors.HexColor('#34495e')),
         ('BACKGROUND', (2, 0), (3, 0), colors.HexColor('#34495e')),
+        ('ALIGN', (1, 0), (1, 0), 'RIGHT'),
+        ('ALIGN', (3, 0), (3, 0), 'RIGHT'),
+        
+        # All cells
         ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
         ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
         ('TOPPADDING', (0, 0), (-1, -1), 8),
         ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
-        ('LEFTPADDING', (0, 0), (-1, -1), 5),
+        ('LEFTPADDING', (0, 0), (-1, -1), 8),
+        ('RIGHTPADDING', (0, 0), (-1, -1), 8),
+        
+        # Amount columns alignment
+        ('ALIGN', (1, 1), (1, -1), 'RIGHT'),
+        ('ALIGN', (3, 1), (3, -1), 'RIGHT'),
+        
+        # Total row styling
         ('BACKGROUND', (0, -1), (-1, -1), colors.HexColor('#ecf0f1')),
     ]))
     elements.append(salary_table)
@@ -481,7 +535,7 @@ async def download_payslip(payslip_id: str, username: str = Depends(verify_token
     # Net Payable
     net_data = [[
         Paragraph('<b>Total Net Payable</b>', salary_style),
-        Paragraph(f"<b>₹{payslip['net_payable']:,.2f}</b>", salary_style)
+        Paragraph(f"<b>{payslip['net_payable']:,.2f}</b>", ParagraphStyle('NetAmount', parent=salary_style, alignment=TA_RIGHT, fontName='Helvetica-Bold'))
     ]]
     net_table = Table(net_data, colWidths=[5.5*inch, 2*inch])
     net_table.setStyle(TableStyle([
@@ -490,8 +544,10 @@ async def download_payslip(payslip_id: str, username: str = Depends(verify_token
         ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
         ('TOPPADDING', (0, 0), (-1, -1), 10),
         ('BOTTOMPADDING', (0, 0), (-1, -1), 10),
-        ('LEFTPADDING', (0, 0), (-1, -1), 5),
+        ('LEFTPADDING', (0, 0), (-1, -1), 8),
+        ('RIGHTPADDING', (0, 0), (-1, -1), 8),
         ('TEXTCOLOR', (0, 0), (-1, -1), colors.white),
+        ('ALIGN', (1, 0), (1, 0), 'RIGHT'),
     ]))
     elements.append(net_table)
     elements.append(Spacer(1, 30))
