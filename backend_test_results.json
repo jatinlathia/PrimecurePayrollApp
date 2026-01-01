@@ -1,0 +1,68 @@
+{
+  "timestamp": "2026-01-01T07:20:58.277742",
+  "total_tests": 12,
+  "passed_tests": 12,
+  "success_rate": 100.0,
+  "test_results": [
+    {
+      "test_name": "Admin Login",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test_name": "Dashboard Stats",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test_name": "Create Employee",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test_name": "Get All Employees",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test_name": "Get Employee by ID",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test_name": "Update Employee",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test_name": "Create Promotion",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test_name": "Get All Promotions",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test_name": "Generate Payslip",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test_name": "Get All Payslips",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test_name": "Download Payslip PDF",
+      "success": true,
+      "details": ""
+    },
+    {
+      "test_name": "Soft Delete Employee",
+      "success": true,
+      "details": ""
+    }
+  ]
+}
