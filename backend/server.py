@@ -605,7 +605,7 @@ async def download_payslip(payslip_id: str, username: str = Depends(verify_token
         Paragraph('<b>Total Net Payable</b>', salary_style),
         net_amount_with_words
     ]]
-    net_table = Table(net_data, colWidths=[2*inch, 5.5*inch])
+    net_table = Table(net_data, colWidths=[1.75*inch, 5.75*inch])
     net_table.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#d3d3d3')),
         ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
