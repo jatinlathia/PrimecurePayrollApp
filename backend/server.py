@@ -55,7 +55,6 @@ class SalaryComponents(BaseModel):
     house_rent_allowance: float = 0
     transport_allowance: float = 0
     fixed_allowance: float = 0
-    home_collection_visit: float = 0
     professional_tax: float = 0
 
 class EmployeeCreate(BaseModel):
@@ -117,6 +116,7 @@ class PayslipGenerate(BaseModel):
     year: int
     paid_days: int
     lop_days: int
+    home_collection_visit: Optional[float] = 0
 
 class Payslip(BaseModel):
     model_config = ConfigDict(extra="ignore")
@@ -317,8 +317,10 @@ async def generate_payslip(payslip_data: PayslipGenerate, username: str = Depend
         earnings['Transport Allowance'] = components['transport_allowance']
     if components.get('fixed_allowance', 0) > 0:
         earnings['Fixed Allowance'] = components['fixed_allowance']
-    if components.get('home_collection_visit', 0) > 0:
-        earnings['Home Collection - Visit'] = components['home_collection_visit']
+    
+    # Add Home Collection - Visit if provided (monthly variable component)
+    if payslip_data.home_collection_visit and payslip_data.home_collection_visit > 0:
+        earnings['Home Collection - Visit'] = payslip_data.home_collection_visit
     
     gross_earnings = sum(earnings.values())
     

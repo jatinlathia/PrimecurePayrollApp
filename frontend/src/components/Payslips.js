@@ -29,7 +29,8 @@ const Payslips = () => {
     month: '',
     year: new Date().getFullYear().toString(),
     paid_days: 30,
-    lop_days: 0
+    lop_days: 0,
+    home_collection_visit: 0
   });
 
   const months = [
@@ -76,7 +77,8 @@ const Payslips = () => {
         month: parseInt(formData.month),
         year: parseInt(formData.year),
         paid_days: parseInt(formData.paid_days),
-        lop_days: parseInt(formData.lop_days)
+        lop_days: parseInt(formData.lop_days),
+        home_collection_visit: parseFloat(formData.home_collection_visit) || 0
       };
       await axios.post(`${API}/payslips/generate`, payload, {
         headers: { Authorization: `Bearer ${token}` }
@@ -117,7 +119,8 @@ const Payslips = () => {
       month: '',
       year: new Date().getFullYear().toString(),
       paid_days: 30,
-      lop_days: 0
+      lop_days: 0,
+      home_collection_visit: 0
     });
   };
 
@@ -259,6 +262,20 @@ const Payslips = () => {
                     max="31"
                   />
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="home_collection_visit">Home Collection - Visit (₹) <span className="text-slate-500 text-xs">(Optional)</span></Label>
+                <Input
+                  id="home_collection_visit"
+                  data-testid="home-collection-visit-input"
+                  type="number"
+                  step="0.01"
+                  value={formData.home_collection_visit}
+                  onChange={(e) => setFormData(prev => ({ ...prev, home_collection_visit: e.target.value }))}
+                  placeholder="Enter amount for this month"
+                  min="0"
+                />
               </div>
 
               <div className="flex justify-end space-x-2 pt-4">

@@ -26,7 +26,6 @@ const Promotions = () => {
       house_rent_allowance: 0,
       transport_allowance: 0,
       fixed_allowance: 0,
-      home_collection_visit: 0,
       professional_tax: 0
     }
   });
@@ -77,7 +76,6 @@ const Promotions = () => {
         house_rent_allowance: 0,
         transport_allowance: 0,
         fixed_allowance: 0,
-        home_collection_visit: 0,
         professional_tax: 0
       }
     });
@@ -217,18 +215,6 @@ const Promotions = () => {
                       type="number"
                       step="0.01"
                       value={formData.new_salary_components.fixed_allowance}
-                      onChange={handleSalaryChange}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="home_collection_visit">Home Collection - Visit</Label>
-                    <Input
-                      id="home_collection_visit"
-                      data-testid="home-collection-salary-input"
-                      name="home_collection_visit"
-                      type="number"
-                      step="0.01"
-                      value={formData.new_salary_components.home_collection_visit}
                       onChange={handleSalaryChange}
                     />
                   </div>
