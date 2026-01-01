@@ -362,6 +362,15 @@ async def get_payslip(payslip_id: str, username: str = Depends(verify_token)):
         raise HTTPException(status_code=404, detail="Payslip not found")
     return payslip
 
+@api_router.delete("/payslips/{payslip_id}")
+async def delete_payslip(payslip_id: str, username: str = Depends(verify_token)):
+    payslip = await db.payslips.find_one({"id": payslip_id})
+    if not payslip:
+        raise HTTPException(status_code=404, detail="Payslip not found")
+    
+    await db.payslips.delete_one({"id": payslip_id})
+    return {"message": "Payslip deleted successfully"}
+
 @api_router.get("/payslips/download/{payslip_id}")
 async def download_payslip(payslip_id: str, username: str = Depends(verify_token)):
     payslip = await db.payslips.find_one({"id": payslip_id}, {"_id": 0})
