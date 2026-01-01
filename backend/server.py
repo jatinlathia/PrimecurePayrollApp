@@ -456,7 +456,7 @@ async def download_payslip(payslip_id: str, username: str = Depends(verify_token
     
     # Load and resize logo
     logo_path = Path(__file__).parent / 'logo.png'
-    logo = Image(str(logo_path), width=1.32*inch, height=0.6*inch)
+    logo = Image(str(logo_path), width=1.386*inch, height=0.6*inch)
     
     # Create a table within the cell to position text left and logo right
     company_info_text = Paragraph(
@@ -535,8 +535,8 @@ async def download_payslip(payslip_id: str, username: str = Depends(verify_token
     
     # TABLE 2: Earnings and Deductions
     salary_style = ParagraphStyle('Salary', parent=styles['Normal'], fontSize=9)
-    salary_header_style = ParagraphStyle('SalaryHeader', parent=styles['Normal'], fontSize=10, textColor=colors.white, fontName='Helvetica-Bold')
-    amount_header_style = ParagraphStyle('AmountHeader', parent=styles['Normal'], fontSize=9, textColor=colors.white, alignment=TA_RIGHT)
+    salary_header_style = ParagraphStyle('SalaryHeader', parent=styles['Normal'], fontSize=10, textColor=colors.white, fontName='Helvetica-Bold', alignment=TA_CENTER)
+    amount_header_style = ParagraphStyle('AmountHeader', parent=styles['Normal'], fontSize=9, textColor=colors.white, alignment=TA_CENTER, fontName='Helvetica-Bold')
     summary_title_style = ParagraphStyle('SummaryTitle', parent=styles['Normal'], fontSize=11, fontName='Helvetica-Bold', alignment=TA_CENTER, textColor=colors.black)
     
     # Build earnings and deductions rows (without rupee symbol in front)
@@ -553,8 +553,8 @@ async def download_payslip(payslip_id: str, username: str = Depends(verify_token
     # Create salary table with EMPLOYEE PAY SUMMARY header row and column headers
     salary_data = [
         [Paragraph('EMPLOYEE PAY SUMMARY', summary_title_style), '', '', ''],
-        [Paragraph('EARNINGS', salary_header_style), Paragraph('Amount', amount_header_style), 
-         Paragraph('DEDUCTIONS', salary_header_style), Paragraph('Amount', amount_header_style)]
+        [Paragraph('EARNINGS', salary_header_style), Paragraph('AMOUNT', amount_header_style), 
+         Paragraph('DEDUCTIONS', salary_header_style), Paragraph('AMOUNT', amount_header_style)]
     ]
     
     for i in range(max_rows):
@@ -582,8 +582,8 @@ async def download_payslip(payslip_id: str, username: str = Depends(verify_token
         # Header row styling (EARNINGS/DEDUCTIONS)
         ('BACKGROUND', (0, 1), (1, 1), colors.HexColor('#34495e')),
         ('BACKGROUND', (2, 1), (3, 1), colors.HexColor('#34495e')),
-        ('ALIGN', (1, 1), (1, 1), 'RIGHT'),
-        ('ALIGN', (3, 1), (3, 1), 'RIGHT'),
+        ('ALIGN', (1, 1), (1, 1), 'CENTER'),
+        ('ALIGN', (3, 1), (3, 1), 'CENTER'),
         
         # All cells
         ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
