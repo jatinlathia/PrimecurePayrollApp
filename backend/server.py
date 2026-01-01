@@ -477,9 +477,7 @@ async def download_payslip(payslip_id: str, username: str = Depends(verify_token
         ('RIGHTPADDING', (1, 0), (1, 0), 10),  # Add padding to keep logo within bounds
     ]))
     
-    # Row 2: Employee Summary Header
-    summary_header_style = ParagraphStyle('SummaryHeader', parent=styles['Normal'], fontSize=11, fontName='Helvetica-Bold', alignment=TA_CENTER, spaceAfter=5, spaceBefore=5)
-    summary_header = Paragraph('EMPLOYEE PAY SUMMARY', summary_header_style)
+    # Row 2: Employee Summary Header - REMOVED
     
     # Employee Details (left aligned and right aligned)
     detail_style = ParagraphStyle('Detail', parent=styles['Normal'], fontSize=9, leading=14)
@@ -504,7 +502,6 @@ async def download_payslip(payslip_id: str, username: str = Depends(verify_token
     # Build Table 1
     table1_data = [
         [company_header_table],
-        [summary_header, ''],
         [left_details, right_details]
     ]
     
@@ -519,23 +516,14 @@ async def download_payslip(payslip_id: str, username: str = Depends(verify_token
         ('LEFTPADDING', (0, 0), (-1, 0), 10),
         ('GRID', (0, 0), (-1, 0), 0.5, colors.grey),
         
-        # Row 2: Employee Summary header
-        ('SPAN', (0, 1), (1, 1)),
-        ('ALIGN', (0, 1), (-1, 1), 'CENTER'),
-        ('VALIGN', (0, 1), (-1, 1), 'MIDDLE'),
-        ('BACKGROUND', (0, 1), (-1, 1), colors.HexColor('#e8e8e8')),
-        ('TOPPADDING', (0, 1), (-1, 1), 8),
-        ('BOTTOMPADDING', (0, 1), (-1, 1), 8),
+        # Row 2: Employee details (previously row 3)
+        ('ALIGN', (0, 1), (0, 1), 'LEFT'),
+        ('ALIGN', (1, 1), (1, 1), 'LEFT'),
+        ('VALIGN', (0, 1), (-1, 1), 'TOP'),
+        ('TOPPADDING', (0, 1), (-1, 1), 10),
+        ('BOTTOMPADDING', (0, 1), (-1, 1), 10),
+        ('LEFTPADDING', (0, 1), (-1, 1), 10),
         ('GRID', (0, 1), (-1, 1), 0.5, colors.grey),
-        
-        # Row 3: Employee details
-        ('ALIGN', (0, 2), (0, 2), 'LEFT'),
-        ('ALIGN', (1, 2), (1, 2), 'LEFT'),
-        ('VALIGN', (0, 2), (-1, 2), 'TOP'),
-        ('TOPPADDING', (0, 2), (-1, 2), 10),
-        ('BOTTOMPADDING', (0, 2), (-1, 2), 10),
-        ('LEFTPADDING', (0, 2), (-1, 2), 10),
-        ('GRID', (0, 2), (-1, 2), 0.5, colors.grey),
     ]))
     
     elements.append(Spacer(1, 10))
