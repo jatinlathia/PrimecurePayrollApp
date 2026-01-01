@@ -573,7 +573,7 @@ async def download_payslip(payslip_id: str, username: str = Depends(verify_token
     salary_table.setStyle(TableStyle([
         # Title row styling (EMPLOYEE PAY SUMMARY)
         ('SPAN', (0, 0), (3, 0)),
-        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#d3d3d3')),
+        ('BACKGROUND', (0, 0), (-1, 0), colors.white),
         ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
         ('VALIGN', (0, 0), (-1, 0), 'MIDDLE'),
         ('TOPPADDING', (0, 0), (-1, 0), 10),
