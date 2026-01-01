@@ -100,16 +100,28 @@ const Payslips = () => {
         responseType: 'blob'
       });
       
-      const url = window.URL.createObjectURL(new Blob([response.data]));
+      // Create blob from response
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      
+      // Create temporary link and trigger download
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', `payslip_${employeeNo}_${months[month - 1].label}_${year}.pdf`);
+      link.download = `payslip_${employeeNo}_${months[month - 1].label}_${year}.pdf`;
+      link.style.display = 'none';
       document.body.appendChild(link);
       link.click();
-      link.remove();
+      
+      // Cleanup
+      setTimeout(() => {
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      }, 100);
+      
       toast.success('Payslip downloaded successfully');
     } catch (error) {
-      toast.error('Failed to download payslip');
+      console.error('Download error:', error);
+      toast.error(error.response?.data?.detail || 'Failed to download payslip');
     }
   };
 
