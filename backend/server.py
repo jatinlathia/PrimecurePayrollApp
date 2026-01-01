@@ -456,7 +456,7 @@ async def download_payslip(payslip_id: str, username: str = Depends(verify_token
     
     # Load and resize logo
     logo_path = Path(__file__).parent / 'logo.png'
-    logo = Image(str(logo_path), width=0.75*inch, height=0.5*inch)
+    logo = Image(str(logo_path), width=0.9*inch, height=0.5*inch)
     
     # Create a table within the cell to position text left and logo right
     company_info_text = Paragraph(
@@ -467,12 +467,14 @@ async def download_payslip(payslip_id: str, username: str = Depends(verify_token
     )
     
     # Inner table for company header with text on left and logo on right
+    # Adjusted column widths to accommodate larger logo
     company_header_data = [[company_info_text, logo]]
-    company_header_table = Table(company_header_data, colWidths=[5.5*inch, 2*inch])
+    company_header_table = Table(company_header_data, colWidths=[5.8*inch, 1.5*inch])
     company_header_table.setStyle(TableStyle([
         ('ALIGN', (0, 0), (0, 0), 'LEFT'),
         ('ALIGN', (1, 0), (1, 0), 'RIGHT'),
         ('VALIGN', (0, 0), (-1, 0), 'MIDDLE'),
+        ('RIGHTPADDING', (1, 0), (1, 0), 10),  # Add padding to keep logo within bounds
     ]))
     
     # Row 2: Employee Summary Header
