@@ -31,6 +31,8 @@ const Payslips = () => {
     paid_days: 30,
     lop_days: 0,
     home_collection_visit: 0,
+    custom_earning_name: '',
+    custom_earning_amount: 0,
     custom_deduction_name: '',
     custom_deduction_amount: 0
   });
@@ -81,6 +83,8 @@ const Payslips = () => {
         paid_days: parseInt(formData.paid_days),
         lop_days: parseInt(formData.lop_days),
         home_collection_visit: parseFloat(formData.home_collection_visit) || 0,
+        custom_earning_name: formData.custom_earning_name || null,
+        custom_earning_amount: parseFloat(formData.custom_earning_amount) || 0,
         custom_deduction_name: formData.custom_deduction_name || null,
         custom_deduction_amount: parseFloat(formData.custom_deduction_amount) || 0
       };
@@ -137,6 +141,8 @@ const Payslips = () => {
       paid_days: 30,
       lop_days: 0,
       home_collection_visit: 0,
+      custom_earning_name: '',
+      custom_earning_amount: 0,
       custom_deduction_name: '',
       custom_deduction_amount: 0
     });
@@ -294,6 +300,36 @@ const Payslips = () => {
                   placeholder="Enter amount for this month"
                   min="0"
                 />
+              </div>
+
+              <div className="border-t pt-4 mt-4">
+                <h3 className="font-semibold mb-3 text-slate-700">Custom Earning <span className="text-slate-500 text-xs font-normal">(Optional)</span></h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="custom_earning_name">Earning Name</Label>
+                    <Input
+                      id="custom_earning_name"
+                      data-testid="custom-earning-name-input"
+                      type="text"
+                      value={formData.custom_earning_name}
+                      onChange={(e) => setFormData(prev => ({ ...prev, custom_earning_name: e.target.value }))}
+                      placeholder="e.g., Bonus, Overtime"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="custom_earning_amount">Amount (₹)</Label>
+                    <Input
+                      id="custom_earning_amount"
+                      data-testid="custom-earning-amount-input"
+                      type="number"
+                      step="0.01"
+                      value={formData.custom_earning_amount}
+                      onChange={(e) => setFormData(prev => ({ ...prev, custom_earning_amount: e.target.value }))}
+                      placeholder="Enter amount"
+                      min="0"
+                    />
+                  </div>
+                </div>
               </div>
 
               <div className="border-t pt-4 mt-4">

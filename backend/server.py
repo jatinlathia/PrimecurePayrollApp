@@ -170,6 +170,8 @@ class PayslipGenerate(BaseModel):
     paid_days: int
     lop_days: int
     home_collection_visit: Optional[float] = 0
+    custom_earning_name: Optional[str] = None
+    custom_earning_amount: Optional[float] = 0
     custom_deduction_name: Optional[str] = None
     custom_deduction_amount: Optional[float] = 0
 
@@ -375,6 +377,10 @@ async def generate_payslip(payslip_data: PayslipGenerate, username: str = Depend
     # Add Home Collection - Visit if provided (monthly variable component)
     if payslip_data.home_collection_visit and payslip_data.home_collection_visit > 0:
         earnings['Home Collection - Visit'] = payslip_data.home_collection_visit
+    
+    # Add custom earning if provided (monthly variable component)
+    if payslip_data.custom_earning_name and payslip_data.custom_earning_amount and payslip_data.custom_earning_amount > 0:
+        earnings[payslip_data.custom_earning_name] = payslip_data.custom_earning_amount
     
     gross_earnings = sum(earnings.values())
     
