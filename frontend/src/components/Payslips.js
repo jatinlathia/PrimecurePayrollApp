@@ -7,9 +7,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { Plus, Download, ChevronDown, Edit2, Save, X } from 'lucide-react';
+import { Plus, Download, ChevronDown, Edit2, Save, X, Trash2 } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -24,6 +25,8 @@ const Payslips = () => {
     paid_days: 30,
     lop_days: 0
   });
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [payslipToDelete, setPayslipToDelete] = useState(null);
   const [formData, setFormData] = useState({
     employee_id: '',
     month: '',
@@ -188,6 +191,26 @@ const Payslips = () => {
       fetchData();
     } catch (error) {
       toast.error(error.response?.data?.detail || 'Failed to update payslip');
+    }
+  };
+
+  const handleDeleteClick = (payslip) => {
+    setPayslipToDelete(payslip);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.delete(`${API}/payslips/${payslipToDelete.id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      toast.success('Payslip deleted successfully');
+      setDeleteDialogOpen(false);
+      setPayslipToDelete(null);
+      fetchData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Failed to delete payslip');
     }
   };
 
@@ -564,6 +587,16 @@ const Payslips = () => {
                               <Download className="h-4 w-4" />
                               <span>Download PDF</span>
                             </Button>
+                            <Button
+                              data-testid={`delete-payslip-${payslip.id}`}
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => handleDeleteClick(payslip)}
+                              className="flex items-center space-x-1"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                              <span>Delete</span>
+                            </Button>
                           </>
                         )}
                       </div>
@@ -575,6 +608,27 @@ const Payslips = () => {
           </Accordion>
         )}
       </div>
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Payslip</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete the payslip for {payslipToDelete?.employee_name} ({months[payslipToDelete?.month - 1]?.label} {payslipToDelete?.year})? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel data-testid="cancel-delete-payslip">Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              data-testid="confirm-delete-payslip" 
+              onClick={handleDeleteConfirm}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
