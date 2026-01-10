@@ -103,6 +103,11 @@ class LoginResponse(BaseModel):
     token: str
     username: str
 
+class AdminCredentialsUpdate(BaseModel):
+    current_password: str
+    new_username: Optional[str] = None
+    new_password: Optional[str] = None
+
 class SalaryComponents(BaseModel):
     basic: float = 0
     house_rent_allowance: float = 0
@@ -239,6 +244,38 @@ async def login(request: LoginRequest):
     
     access_token = create_access_token(data={"sub": request.username})
     return LoginResponse(token=access_token, username=request.username)
+
+@api_router.put("/admin/credentials")
+async def update_admin_credentials(request: AdminCredentialsUpdate, username: str = Depends(verify_token)):
+    # Verify current password
+    admin = await db.admins.find_one({"username": username}, {"_id": 0})
+    if not admin:
+        raise HTTPException(status_code=404, detail="Admin not found")
+    
+    if not bcrypt.checkpw(request.current_password.encode('utf-8'), admin['password_hash'].encode('utf-8')):
+        raise HTTPException(status_code=401, detail="Current password is incorrect")
+    
+    # Prepare update data
+    update_data = {}
+    
+    if request.new_username:
+        # Check if new username already exists
+        existing = await db.admins.find_one({"username": request.new_username})
+        if existing and existing['username'] != username:
+            raise HTTPException(status_code=400, detail="Username already exists")
+        update_data["username"] = request.new_username
+    
+    if request.new_password:
+        hashed_password = bcrypt.hashpw(request.new_password.encode('utf-8'), bcrypt.gensalt())
+        update_data["password_hash"] = hashed_password.decode('utf-8')
+    
+    if not update_data:
+        raise HTTPException(status_code=400, detail="No changes provided")
+    
+    # Update admin credentials
+    await db.admins.update_one({"username": username}, {"$set": update_data})
+    
+    return {"message": "Credentials updated successfully"}
 
 # Employee Routes
 @api_router.post("/employees", response_model=Employee)
