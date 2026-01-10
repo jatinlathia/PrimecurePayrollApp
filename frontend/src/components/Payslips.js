@@ -366,63 +366,101 @@ const Payslips = () => {
               </div>
 
               <div className="border-t pt-4 mt-4">
-                <h3 className="font-semibold mb-3 text-slate-700">Custom Earning <span className="text-slate-500 text-xs font-normal">(Optional)</span></h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="custom_earning_name">Earning Name</Label>
-                    <Input
-                      id="custom_earning_name"
-                      data-testid="custom-earning-name-input"
-                      type="text"
-                      value={formData.custom_earning_name}
-                      onChange={(e) => setFormData(prev => ({ ...prev, custom_earning_name: e.target.value }))}
-                      placeholder="e.g., Bonus, Overtime"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="custom_earning_amount">Amount (₹)</Label>
-                    <Input
-                      id="custom_earning_amount"
-                      data-testid="custom-earning-amount-input"
-                      type="number"
-                      step="0.01"
-                      value={formData.custom_earning_amount}
-                      onChange={(e) => setFormData(prev => ({ ...prev, custom_earning_amount: e.target.value }))}
-                      placeholder="Enter amount"
-                      min="0"
-                    />
-                  </div>
+                <div className="flex justify-between items-center mb-3">
+                  <h3 className="font-semibold text-slate-700">Custom Earnings <span className="text-slate-500 text-xs font-normal">(Optional)</span></h3>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={addCustomEarning}
+                    data-testid="add-custom-earning-button"
+                  >
+                    <Plus className="h-4 w-4 mr-1" />
+                    Add Earning
+                  </Button>
                 </div>
+                {formData.custom_earnings.map((earning, index) => (
+                  <div key={index} className="grid grid-cols-2 gap-4 mb-3">
+                    <div className="space-y-2">
+                      <Input
+                        data-testid={`custom-earning-name-${index}`}
+                        type="text"
+                        value={earning.name}
+                        onChange={(e) => updateCustomEarning(index, 'name', e.target.value)}
+                        placeholder="e.g., Bonus, Overtime"
+                      />
+                    </div>
+                    <div className="space-y-2 flex gap-2">
+                      <Input
+                        data-testid={`custom-earning-amount-${index}`}
+                        type="number"
+                        step="0.01"
+                        value={earning.amount}
+                        onChange={(e) => updateCustomEarning(index, 'amount', parseFloat(e.target.value) || 0)}
+                        placeholder="Amount (₹)"
+                        min="0"
+                      />
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => removeCustomEarning(index)}
+                        data-testid={`remove-custom-earning-${index}`}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
               </div>
 
               <div className="border-t pt-4 mt-4">
-                <h3 className="font-semibold mb-3 text-slate-700">Custom Deduction <span className="text-slate-500 text-xs font-normal">(Optional)</span></h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="custom_deduction_name">Deduction Name</Label>
-                    <Input
-                      id="custom_deduction_name"
-                      data-testid="custom-deduction-name-input"
-                      type="text"
-                      value={formData.custom_deduction_name}
-                      onChange={(e) => setFormData(prev => ({ ...prev, custom_deduction_name: e.target.value }))}
-                      placeholder="e.g., Advance Deduction"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="custom_deduction_amount">Amount (₹)</Label>
-                    <Input
-                      id="custom_deduction_amount"
-                      data-testid="custom-deduction-amount-input"
-                      type="number"
-                      step="0.01"
-                      value={formData.custom_deduction_amount}
-                      onChange={(e) => setFormData(prev => ({ ...prev, custom_deduction_amount: e.target.value }))}
-                      placeholder="Enter amount"
-                      min="0"
-                    />
-                  </div>
+                <div className="flex justify-between items-center mb-3">
+                  <h3 className="font-semibold text-slate-700">Custom Deductions <span className="text-slate-500 text-xs font-normal">(Optional)</span></h3>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={addCustomDeduction}
+                    data-testid="add-custom-deduction-button"
+                  >
+                    <Plus className="h-4 w-4 mr-1" />
+                    Add Deduction
+                  </Button>
                 </div>
+                {formData.custom_deductions.map((deduction, index) => (
+                  <div key={index} className="grid grid-cols-2 gap-4 mb-3">
+                    <div className="space-y-2">
+                      <Input
+                        data-testid={`custom-deduction-name-${index}`}
+                        type="text"
+                        value={deduction.name}
+                        onChange={(e) => updateCustomDeduction(index, 'name', e.target.value)}
+                        placeholder="e.g., Advance Deduction"
+                      />
+                    </div>
+                    <div className="space-y-2 flex gap-2">
+                      <Input
+                        data-testid={`custom-deduction-amount-${index}`}
+                        type="number"
+                        step="0.01"
+                        value={deduction.amount}
+                        onChange={(e) => updateCustomDeduction(index, 'amount', parseFloat(e.target.value) || 0)}
+                        placeholder="Amount (₹)"
+                        min="0"
+                      />
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => removeCustomDeduction(index)}
+                        data-testid={`remove-custom-deduction-${index}`}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
               </div>
 
               <div className="flex justify-end space-x-2 pt-4">
