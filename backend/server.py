@@ -168,6 +168,10 @@ class Promotion(BaseModel):
     promotion_date: str
     created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
+class CustomComponent(BaseModel):
+    name: str
+    amount: float
+
 class PayslipGenerate(BaseModel):
     employee_id: str
     month: int
@@ -175,10 +179,8 @@ class PayslipGenerate(BaseModel):
     paid_days: int
     lop_days: int
     home_collection_visit: Optional[float] = 0
-    custom_earning_name: Optional[str] = None
-    custom_earning_amount: Optional[float] = 0
-    custom_deduction_name: Optional[str] = None
-    custom_deduction_amount: Optional[float] = 0
+    custom_earnings: Optional[List[CustomComponent]] = []
+    custom_deductions: Optional[List[CustomComponent]] = []
 
 class Payslip(BaseModel):
     model_config = ConfigDict(extra="ignore")
@@ -415,9 +417,11 @@ async def generate_payslip(payslip_data: PayslipGenerate, username: str = Depend
     if payslip_data.home_collection_visit and payslip_data.home_collection_visit > 0:
         earnings['Home Collection - Visit'] = payslip_data.home_collection_visit
     
-    # Add custom earning if provided (monthly variable component)
-    if payslip_data.custom_earning_name and payslip_data.custom_earning_amount and payslip_data.custom_earning_amount > 0:
-        earnings[payslip_data.custom_earning_name] = payslip_data.custom_earning_amount
+    # Add custom earnings if provided (monthly variable components)
+    if payslip_data.custom_earnings:
+        for custom in payslip_data.custom_earnings:
+            if custom.name and custom.amount > 0:
+                earnings[custom.name] = custom.amount
     
     gross_earnings = sum(earnings.values())
     
@@ -426,9 +430,11 @@ async def generate_payslip(payslip_data: PayslipGenerate, username: str = Depend
     if components.get('professional_tax', 0) > 0:
         deductions['Professional Tax'] = components['professional_tax']
     
-    # Add custom deduction if provided (monthly variable component)
-    if payslip_data.custom_deduction_name and payslip_data.custom_deduction_amount and payslip_data.custom_deduction_amount > 0:
-        deductions[payslip_data.custom_deduction_name] = payslip_data.custom_deduction_amount
+    # Add custom deductions if provided (monthly variable components)
+    if payslip_data.custom_deductions:
+        for custom in payslip_data.custom_deductions:
+            if custom.name and custom.amount > 0:
+                deductions[custom.name] = custom.amount
     
     total_deductions = sum(deductions.values())
     net_payable = gross_earnings - total_deductions
