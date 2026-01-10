@@ -34,10 +34,8 @@ const Payslips = () => {
     paid_days: 30,
     lop_days: 0,
     home_collection_visit: 0,
-    custom_earning_name: '',
-    custom_earning_amount: 0,
-    custom_deduction_name: '',
-    custom_deduction_amount: 0
+    custom_earnings: [],
+    custom_deductions: []
   });
 
   const months = [
@@ -86,10 +84,8 @@ const Payslips = () => {
         paid_days: parseInt(formData.paid_days),
         lop_days: parseInt(formData.lop_days),
         home_collection_visit: parseFloat(formData.home_collection_visit) || 0,
-        custom_earning_name: formData.custom_earning_name || null,
-        custom_earning_amount: parseFloat(formData.custom_earning_amount) || 0,
-        custom_deduction_name: formData.custom_deduction_name || null,
-        custom_deduction_amount: parseFloat(formData.custom_deduction_amount) || 0
+        custom_earnings: formData.custom_earnings.filter(e => e.name && e.amount > 0),
+        custom_deductions: formData.custom_deductions.filter(d => d.name && d.amount > 0)
       };
       await axios.post(`${API}/payslips/generate`, payload, {
         headers: { Authorization: `Bearer ${token}` }
@@ -144,11 +140,55 @@ const Payslips = () => {
       paid_days: 30,
       lop_days: 0,
       home_collection_visit: 0,
-      custom_earning_name: '',
-      custom_earning_amount: 0,
-      custom_deduction_name: '',
-      custom_deduction_amount: 0
+      custom_earnings: [],
+      custom_deductions: []
     });
+  };
+
+  const addCustomEarning = () => {
+    setFormData(prev => ({
+      ...prev,
+      custom_earnings: [...prev.custom_earnings, { name: '', amount: 0 }]
+    }));
+  };
+
+  const removeCustomEarning = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      custom_earnings: prev.custom_earnings.filter((_, i) => i !== index)
+    }));
+  };
+
+  const updateCustomEarning = (index, field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      custom_earnings: prev.custom_earnings.map((item, i) =>
+        i === index ? { ...item, [field]: value } : item
+      )
+    }));
+  };
+
+  const addCustomDeduction = () => {
+    setFormData(prev => ({
+      ...prev,
+      custom_deductions: [...prev.custom_deductions, { name: '', amount: 0 }]
+    }));
+  };
+
+  const removeCustomDeduction = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      custom_deductions: prev.custom_deductions.filter((_, i) => i !== index)
+    }));
+  };
+
+  const updateCustomDeduction = (index, field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      custom_deductions: prev.custom_deductions.map((item, i) =>
+        i === index ? { ...item, [field]: value } : item
+      )
+    }));
   };
 
   const handleEditPayslip = (payslip) => {
