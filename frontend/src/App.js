@@ -6,6 +6,7 @@ import Dashboard from "@/components/Dashboard";
 import Employees from "@/components/Employees";
 import Promotions from "@/components/Promotions";
 import Payslips from "@/components/Payslips";
+import Settings from "@/components/Settings";
 import Layout from "@/components/Layout";
 
 function App() {
@@ -51,6 +52,7 @@ function App() {
             <Route path="employees" element={<Employees />} />
             <Route path="promotions" element={<Promotions />} />
             <Route path="payslips" element={<Payslips />} />
+            <Route path="settings" element={<Settings />} />
           </Route>
         </Routes>
       </BrowserRouter>
