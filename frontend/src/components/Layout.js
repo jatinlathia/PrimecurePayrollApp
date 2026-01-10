@@ -1,6 +1,6 @@
 import { Outlet, NavLink } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Users, TrendingUp, FileText, LayoutDashboard, LogOut } from 'lucide-react';
+import { Users, TrendingUp, FileText, LayoutDashboard, LogOut, Settings as SettingsIcon } from 'lucide-react';
 
 const Layout = ({ onLogout }) => {
   const username = localStorage.getItem('username');
@@ -10,6 +10,7 @@ const Layout = ({ onLogout }) => {
     { to: '/employees', icon: Users, label: 'Employees' },
     { to: '/promotions', icon: TrendingUp, label: 'Promotions' },
     { to: '/payslips', icon: FileText, label: 'Payslips' },
+    { to: '/settings', icon: SettingsIcon, label: 'Settings' },
   ];
 
   return (
